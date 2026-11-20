@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Escribano</title>
+<meta name="description" content="Transcripción en vivo de todo lo que se dice en español. Gratis y sin cuenta.">
+<meta name="theme-color" content="#E8EEE6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111714" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Literata:opsz,wght@7..72,400;7..72,500&display=swap">
+<style>
+/* Libreta de taquigrafía: cabecera, selector de sesión, hoja rayada con margen para la hora, y barra de control abajo. */
+:root {
+  --paper: #E8EEE6;
+  --sheet: #F8FAF5;
+  --ink: #1C2630;
+  --ink-soft: #586571;
+  --rule: #D4DED1;
+  --margin: #D99C92;
+  --accent: #2B6A4F;
+  --accent-ink: #FFFFFF;
+  --accent-wash: #DCE9E1;
+  --live: #C23A2C;
+  --live-ink: #FFFFFF;
+  --warn-bg: #FBEFD7;
+  --warn-ink: #66460C;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-text: "Literata", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --line: 1.875rem;
+  --stamp-col: 4.75rem;
+  --sheet-pad: 1.25rem;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #111714;
+    --sheet: #18201C;
+    --ink: #E3EAE4;
+    --ink-soft: #98A69E;
+    --rule: #27322D;
+    --margin: #74493F;
+    --accent: #64B892;
+    --accent-ink: #0C1410;
+    --accent-wash: #1E3229;
+    --live: #FF7262;
+    --live-ink: #1C0906;
+    --warn-bg: #382D16;
+    --warn-ink: #F1D59E;
+    color-scheme: dark;
+  }
+}
+
+html { height: 100%; }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+[hidden] { display: none !important; }
+button, select, input, summary { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  height: 100vh;
+  height: 100dvh;
+  max-width: 60rem;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Cabecera */
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+}
+.brand { min-width: 0; flex: 1 1 18rem; }
+.brand h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+.brand p {
+  margin: 0.3rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.about { margin-top: 0.35rem; font-size: 0.85rem; color: var(--ink-soft); }
+.about summary {
+  cursor: pointer;
+  width: fit-content;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.about ul { margin: 0.5rem 0 0; padding-left: 1.1rem; max-width: 40rem; line-height: 1.5; display: grid; gap: 0.3rem; }
+.field { display: flex; flex-direction: column; gap: 0.3rem; }
+.field label, .eyebrow {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ink-soft);
+}
+select {
+  font-size: 0.9rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--sheet);
+  color: var(--ink);
+  max-width: 100%;
+}
+select:disabled { opacity: 0.6; }
+
+/* Sesiones */
+.sessionbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.sessionbar select { flex: 1 1 14rem; min-width: 0; }
+
+/* Avisos */
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.6rem 0.6rem 0.6rem 0.9rem;
+  border-radius: 6px;
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.notice[data-kind="info"] { background: var(--accent-wash); color: var(--ink); }
+.notice .msg { flex: 1 1 16rem; min-width: 0; }
+.notice .close {
+  border: 0;
+  background: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Hoja rayada */
+.sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background-color: var(--sheet);
+  background-image:
+    linear-gradient(to right,
+      transparent calc(var(--sheet-pad) + var(--stamp-col)),
+      var(--margin) calc(var(--sheet-pad) + var(--stamp-col)),
+      var(--margin) calc(var(--sheet-pad) + var(--stamp-col) + 1px),
+      transparent calc(var(--sheet-pad) + var(--stamp-col) + 1px)),
+    linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px));
+  background-size: 100% 100%, 100% var(--line);
+  background-attachment: local, local;
+  padding-block: var(--line);
+  padding-inline: var(--sheet-pad) 1.5rem;
+}
+.transcript {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--line);
+}
+.transcript + .transcript { margin-top: var(--line); }
+.para {
+  display: grid;
+  grid-template-columns: var(--stamp-col) minmax(0, 1fr);
+  column-gap: 0.9rem;
+  align-items: first baseline;
+}
+.para time, .para .tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: var(--line);
+  color: var(--ink-soft);
+  text-align: right;
+  padding-right: 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.para p {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 1.125rem;
+  line-height: var(--line);
+  overflow-wrap: anywhere;
+}
+.para.pending time { color: var(--live); }
+.partial { color: var(--ink-soft); font-style: italic; }
+.example { opacity: 0.6; }
+.example .chip {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  padding: 0 0.5rem;
+  border-radius: 3px;
+  background: var(--accent-wash);
+  color: var(--accent);
+  vertical-align: 0.1em;
+}
+.example .hint { font-family: var(--font-display); font-size: 0.9rem; color: var(--ink-soft); }
+
+/* Barra de control */
+.dock { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; }
+.rec {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  touch-action: manipulation;
+}
+.rec .glyph {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: currentColor;
+  transition: border-radius 0.15s ease;
+}
+.rec[data-state="listening"], .rec[data-state="starting"] { background: var(--live); color: var(--live-ink); }
+.rec[data-state="listening"] .glyph, .rec[data-state="starting"] .glyph { border-radius: 2px; }
+.rec:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.meter { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; font-size: 0.85rem; color: var(--ink-soft); }
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--sheet);
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.status::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ink-soft); }
+.status[data-state="listening"]::before { background: var(--live); animation: pulse 1.4s ease-in-out infinite; }
+.status[data-state="starting"]::before { background: var(--accent); }
+.status[data-state="off"] { color: var(--ink-soft); }
+.stat b { font-family: var(--font-mono); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.actions { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.check { display: inline-flex; align-items: center; gap: 0.4rem; margin-right: 0.25rem; font-size: 0.85rem; color: var(--ink-soft); cursor: pointer; }
+.check input { accent-color: var(--accent); margin: 0; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--sheet);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.btn:hover:not(:disabled) { border-color: var(--ink-soft); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.btn.danger { color: var(--live); }
+.btn.solid-danger { background: var(--live); border-color: var(--live); color: var(--live-ink); }
+.confirm { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
+
+/* Menú de descarga */
+.menu { position: relative; }
+.menu summary { list-style: none; }
+.menu summary::-webkit-details-marker { display: none; }
+.menu-pop {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  min-width: 11rem;
+  display: grid;
+  padding: 0.3rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--sheet);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.14);
+  z-index: 5;
+}
+.menu-pop button {
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  border-radius: 5px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.menu-pop button:hover { background: var(--accent-wash); }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  top: calc(1rem + env(safe-area-inset-top, 0px));
+  transform: translate(-50%, -0.5rem);
+  max-width: calc(100% - 32px);
+  padding: 0.55rem 0.95rem;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--sheet);
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 20;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@keyframes pulse { 50% { opacity: 0.3; } }
+
+@media (max-width: 560px) {
+  :root { --stamp-col: 3.9rem; --sheet-pad: 0.75rem; --line: 1.75rem; }
+  .app { gap: 0.6rem; }
+  .sheet { padding-inline: var(--sheet-pad) 0.9rem; }
+  .para { column-gap: 0.7rem; }
+  .para time, .para .tag { font-size: 0.68rem; padding-right: 0.45rem; }
+  .para p { font-size: 1.05rem; }
+  .rec { flex: 1 1 100%; }
+  .actions { margin-left: 0; }
+  .menu-pop { right: auto; left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>Escribano</h1>
+      <p>Transcribe en vivo todo lo que se dice en español. Gratis, sin cuenta. El texto se queda en este dispositivo.</p>
+      <details class="about">
+        <summary>Privacidad y navegadores</summary>
+        <ul>
+          <li>El audio lo procesa el servicio de voz de tu navegador (Google en Chrome, Microsoft en Edge, Apple en Safari). Por eso necesita internet.</li>
+          <li>El texto se guarda solo en este navegador. Nadie más lo ve, y si borras los datos del navegador se borra también.</li>
+          <li>Funciona en Chrome y Edge (computadora y Android) y en Safari (iPhone, iPad y Mac). No funciona en Firefox ni en Brave.</li>
+          <li>Para tenerla como app en el celular: en Safari, Compartir › Añadir a pantalla de inicio. En Chrome, menú ⋮ › Añadir a pantalla de inicio.</li>
+          <li>Mantén la página abierta y la pantalla encendida mientras transcribe.</li>
+        </ul>
+      </details>
+    </div>
+    <div class="field">
+      <label for="lang">Variante</label>
+      <select id="lang">
+        <option value="es-MX">Español de México</option>
+        <option value="es-US">Español de EE. UU.</option>
+        <option value="es-ES">Español de España</option>
+        <option value="es-AR">Español de Argentina</option>
+        <option value="es-CO">Español de Colombia</option>
+        <option value="es-CL">Español de Chile</option>
+        <option value="es-PE">Español de Perú</option>
+        <option value="es-UY">Español de Uruguay</option>
+        <option value="es-VE">Español de Venezuela</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="sessionbar">
+    <label class="eyebrow" for="session">Sesión</label>
+    <select id="session"></select>
+    <button type="button" class="btn" id="newSession">Nueva sesión</button>
+    <button type="button" class="btn danger" id="deleteSession">Eliminar</button>
+    <span class="confirm" id="deleteConfirm" hidden>
+      ¿Eliminar esta sesión? No se puede deshacer.
+      <button type="button" class="btn solid-danger" id="deleteYes">Sí, eliminar</button>
+      <button type="button" class="btn" id="deleteNo">Cancelar</button>
+    </span>
+  </div>
+
+  <div id="notice" class="notice" role="status" hidden></div>
+
+  <main class="sheet" id="sheet">
+    <ol class="transcript" id="transcript" aria-label="Transcripción"></ol>
+    <ol class="transcript example" id="example" aria-label="Ejemplo de transcripción">
+      <li class="para">
+        <span class="tag" aria-hidden="true"></span>
+        <p><span class="chip">Ejemplo</span> <span class="hint">Así se verá tu transcripción. Desaparece en cuanto empiezas.</span></p>
+      </li>
+      <li class="para">
+        <time>10:30:12</time>
+        <p>Buenos días a todos. Empezamos con la revisión de la semana: el lunes cerramos los pedidos pendientes y el martes llega el equipo nuevo a la tienda del centro.</p>
+      </li>
+      <li class="para">
+        <time>10:30:41</time>
+        <p>Perfecto. ¿Alguien tiene dudas sobre el calendario o pasamos al siguiente punto?</p>
+      </li>
+      <li class="para pending">
+        <time>10:31:02</time>
+        <p>Yo tengo una pregunta sobre los <span class="partial">horarios del fin de semana</span></p>
+      </li>
+    </ol>
+  </main>
+
+  <footer class="dock">
+    <button type="button" id="rec" class="rec" data-state="idle">
+      <span class="glyph" aria-hidden="true"></span><span id="recLabel">Empezar a transcribir</span>
+    </button>
+    <div class="meter">
+      <span class="status" id="status" data-state="idle">Listo</span>
+      <span class="stat"><b id="clock">00:00</b> de escucha</span>
+      <span class="stat"><b id="words">0</b> palabras</span>
+    </div>
+    <div class="actions">
+      <label class="check" for="stamps"><input type="checkbox" id="stamps" checked> Incluir horas</label>
+      <button type="button" class="btn" id="copy">Copiar</button>
+      <button type="button" class="btn" id="share" hidden>Compartir</button>
+      <details class="menu" id="dlMenu">
+        <summary class="btn" id="dlSummary">Descargar</summary>
+        <div class="menu-pop">
+          <button type="button" id="dlTxt">Texto (.txt)</button>
+          <button type="button" id="dlJson">Datos (.json)</button>
+        </div>
+      </details>
+    </div>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    rec: $('rec'), recLabel: $('recLabel'), status: $('status'), clock: $('clock'), words: $('words'),
+    list: $('transcript'), example: $('example'), sheet: $('sheet'), notice: $('notice'), lang: $('lang'),
+    session: $('session'), newBtn: $('newSession'), del: $('deleteSession'), delConfirm: $('deleteConfirm'),
+    delYes: $('deleteYes'), delNo: $('deleteNo'), stamps: $('stamps'), copy: $('copy'), share: $('share'),
+    dlMenu: $('dlMenu'), dlSummary: $('dlSummary'), dlTxt: $('dlTxt'), dlJson: $('dlJson'), toast: $('toast')
+  };
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  const KEY = 'escribano.web.v1';
+  const PARA_GAP_MS = 4000;     // una pausa más larga empieza un párrafo nuevo
+  const PARA_SOFT_MAX = 650;    // los párrafos muy largos se cortan al terminar una frase
+  const UA = navigator.userAgent;
+  const isAndroid = /Android/i.test(UA);
+  const isSafari = /Safari/i.test(UA) && !/Chrome|Chromium|CriOS|Edg|Android/i.test(UA);
+  const LOCALES = Array.from(els.lang.options).map((o) => o.value);
+
+  // ---------- utilidades ----------
+  const pad = (n) => String(n).padStart(2, '0');
+  const isoNoMs = (d) => new Date(d).toISOString().replace(/\.\d{3}Z$/, 'Z');
+  const clock = (t) => { const d = new Date(t); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; };
+  const duration = (ms) => {
+    const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+    return h ? `${h}:${pad(m)}:${pad(ss)}` : `${pad(m)}:${pad(ss)}`;
+  };
+  const countWords = (s) => (s.match(/\S+/g) || []).length;
+  const wordsOf = (s) => s.paragraphs.reduce((n, p) => n + countWords(p.text), 0);
+  const cap = (t) => (t ? t.charAt(0).toLocaleUpperCase('es') + t.slice(1) : t);
+  const endsSentence = (t) => /[.?!…:;,]["»”)]?$/.test(t.trim());
+  const uuid = () => (window.crypto && crypto.randomUUID
+    ? crypto.randomUUID()
+    : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        return (c === 'x' ? r : (r & 3) | 8).toString(16);
+      })).toUpperCase();
+  const longDate = (d) => cap(new Date(d).toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
+  const dayTime = (d) => new Date(d).toLocaleString('es', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+  // ---------- datos (mismo formato que la app de Mac) ----------
+  let db = { sessions: [], currentId: null, locale: null, includeTimes: true };
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d && Array.isArray(d.sessions)) db = Object.assign(db, d);
+    }
+  } catch (e) { /* sin almacenamiento: la página funciona igual */ }
+  db.sessions = db.sessions.filter((s) => s && Array.isArray(s.paragraphs) && s.paragraphs.length > 0);
+  if (!LOCALES.includes(db.locale)) {
+    const nav = (navigator.language || '').toLowerCase();
+    db.locale = LOCALES.find((x) => x.toLowerCase() === nav) || 'es-MX';
+  }
+
+  let storageWarned = false;
+  function persist() {
+    try { localStorage.setItem(KEY, JSON.stringify(db)); }
+    catch (e) {
+      if (!storageWarned) {
+        storageWarned = true;
+        note('warn', 'Este navegador no deja guardar. Copia o descarga el texto antes de cerrar la página.');
+      }
+    }
+  }
+
+  function makeSession() {
+    const now = new Date();
+    const id = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}_${Math.random().toString(16).slice(2, 6)}`;
+    return {
+      formatVersion: 1, id, title: 'Sesión del ' + dayTime(now), locale: db.locale,
+      createdAt: isoNoMs(now), updatedAt: isoNoMs(now), listenedSeconds: 0, paragraphs: []
+    };
+  }
+  const byId = (id) => db.sessions.find((s) => s.id === id) || null;
+  function current() {
+    let s = byId(db.currentId);
+    if (!s) {
+      s = makeSession();
+      db.sessions.unshift(s);
+      db.currentId = s.id;
+    }
+    return s;
+  }
+
+  // ---------- estado de escucha ----------
+  let rec = null;            // reconocedor activo
+  let want = false;          // la persona quiere seguir escuchando
+  let state = 'idle';        // idle | starting | listening
+  let activeId = null;       // sesión que recibe el texto
+  let runStart = 0;          // inicio del tramo de escucha actual
+  let autoStart = false;     // el último arranque fue automático (no un toque)
+  let restarts = [];
+  let lastFinalAt = 0;
+  let breakNext = true;
+  let phrase = null;
+  let pendingLi = null;
+  let wordCount = 0;
+  let wake = null;
+  let tick = null;
+  const partialEl = document.createElement('span');
+  partialEl.className = 'partial';
+
+  // ---------- avisos ----------
+  let toastTimer = null;
+  function toast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => els.toast.classList.remove('show'), 2400);
+  }
+  function hideNotice() { els.notice.hidden = true; els.notice.replaceChildren(); }
+  function note(kind, msg) {
+    els.notice.dataset.kind = kind;
+    const span = document.createElement('span');
+    span.className = 'msg';
+    span.textContent = msg;
+    const x = document.createElement('button');
+    x.type = 'button'; x.className = 'close'; x.textContent = '×';
+    x.setAttribute('aria-label', 'Cerrar aviso');
+    x.addEventListener('click', hideNotice);
+    els.notice.replaceChildren(span, x);
+    els.notice.hidden = false;
+  }
+
+  // ---------- render ----------
+  function makeLi(t, text) {
+    const li = document.createElement('li');
+    li.className = 'para';
+    const time = document.createElement('time');
+    time.dateTime = new Date(t).toISOString();
+    time.textContent = clock(t);
+    const p = document.createElement('p');
+    const fin = document.createElement('span');
+    fin.className = 'final';
+    fin.textContent = text;
+    p.append(fin);
+    li.append(time, p);
+    return li;
+  }
+  function lastSettledLi() {
+    for (let li = els.list.lastElementChild; li; li = li.previousElementSibling) {
+      if (!li.classList.contains('pending')) return li;
+    }
+    return null;
+  }
+  function optionLabel(s) {
+    const w = wordsOf(s);
+    return w ? `${s.title} · ${w.toLocaleString('es')} palabras` : `${s.title} · vacía`;
+  }
+  function renderSessions() {
+    els.session.replaceChildren(...db.sessions.map((s) => {
+      const o = document.createElement('option');
+      o.value = s.id;
+      o.textContent = optionLabel(s);
+      return o;
+    }));
+    els.session.value = db.currentId;
+  }
+  function updateSessionOption(s) {
+    const o = Array.from(els.session.options).find((x) => x.value === s.id);
+    if (o) o.textContent = optionLabel(s);
+  }
+  function renderTranscript() {
+    const s = current();
+    els.list.replaceChildren(...s.paragraphs.map((p) => makeLi(p.startedAt, p.text)));
+    wordCount = wordsOf(s);
+    pendingLi = null;
+    refresh();
+    els.sheet.scrollTop = els.sheet.scrollHeight;
+  }
+  function updateClock() {
+    const s = current();
+    const live = runStart && activeId === s.id ? Date.now() - runStart : 0;
+    els.clock.textContent = duration(s.listenedSeconds * 1000 + live);
+  }
+  const STATUS = { idle: 'Listo', starting: 'Preparando', listening: 'Escuchando' };
+  function refresh() {
+    const s = current();
+    const has = s.paragraphs.length > 0;
+    const busy = state !== 'idle';
+    els.example.hidden = has || !!pendingLi || busy;
+    els.words.textContent = wordCount.toLocaleString('es');
+    els.copy.disabled = !has;
+    els.share.disabled = !has;
+    els.dlSummary.setAttribute('aria-disabled', String(!has));
+    els.lang.disabled = busy || !SR;
+    els.session.disabled = busy;
+    els.newBtn.disabled = busy || !has;
+    els.del.disabled = busy || !has;
+    els.rec.dataset.state = state;
+    if (!SR) {
+      els.status.dataset.state = 'off';
+      els.status.textContent = 'No disponible';
+      els.recLabel.textContent = 'No funciona en este navegador';
+      els.rec.disabled = true;
+    } else {
+      els.status.dataset.state = state;
+      els.status.textContent = STATUS[state];
+      els.recLabel.textContent = state === 'listening' ? 'Detener'
+        : state === 'starting' ? 'Preparando…'
+        : has ? 'Continuar' : 'Empezar a transcribir';
+      els.rec.disabled = false;
+    }
+    updateClock();
+  }
+  const nearBottom = () => els.sheet.scrollHeight - els.sheet.scrollTop - els.sheet.clientHeight < 90;
+  const stick = (was) => { if (was) els.sheet.scrollTop = els.sheet.scrollHeight; };
+
+  // ---------- párrafos ----------
+  function needsBreak(now, s) {
+    if (breakNext || s.paragraphs.length === 0) return true;
+    if (now - lastFinalAt > PARA_GAP_MS) return true;
+    const last = s.paragraphs[s.paragraphs.length - 1].text;
+    return last.length > PARA_SOFT_MAX && /[.?!…]["»”)]?\s*$/.test(last);
+  }
+  function currentPhrase(now, s) {
+    if (phrase && phrase.settledAt && now - phrase.settledAt > 1500) phrase = null;
+    if (!phrase) phrase = { t: now, newPara: needsBreak(now, s), settledAt: 0 };
+    return phrase;
+  }
+
+  function showPartial(text) {
+    const s = byId(activeId);
+    if (!s || s.id !== db.currentId) return;
+    const now = Date.now();
+    const near = nearBottom();
+    const clean = text.replace(/\s+/g, ' ').trim();
+    if (!clean) {
+      partialEl.textContent = '';
+      partialEl.remove();
+      if (pendingLi) { pendingLi.remove(); pendingLi = null; }
+      if (phrase) phrase.settledAt = now;
+      refresh();
+      return;
+    }
+    const ph = currentPhrase(now, s);
+    ph.settledAt = 0;
+    if (ph.newPara) {
+      if (!pendingLi) {
+        pendingLi = makeLi(ph.t, '');
+        pendingLi.classList.add('pending');
+        els.list.append(pendingLi);
+      }
+      partialEl.textContent = cap(clean);
+      pendingLi.querySelector('p').append(partialEl);
+    } else {
+      const li = lastSettledLi();
+      partialEl.textContent = ' ' + clean;
+      if (li) li.querySelector('p').append(partialEl);
+    }
+    refresh();
+    stick(near);
+  }
+
+  function addFinal(raw) {
+    const s = byId(activeId);
+    if (!s) return;
+    const text = raw.replace(/\s+/g, ' ').trim();
+    if (!text) return;
+    const now = Date.now();
+    const near = nearBottom();
+    const visible = s.id === db.currentId;
+    const ph = currentPhrase(now, s);
+    partialEl.textContent = '';
+    partialEl.remove();
+    if (ph.newPara || s.paragraphs.length === 0) {
+      const prev = s.paragraphs[s.paragraphs.length - 1];
+      if (prev && !endsSentence(prev.text)) {
+        prev.text += '.';
+        const li = visible ? lastSettledLi() : null;
+        if (li) li.querySelector('.final').textContent = prev.text;
+      }
+      const p = { id: uuid(), startedAt: isoNoMs(ph.t), text: cap(text) };
+      s.paragraphs.push(p);
+      if (pendingLi) { pendingLi.remove(); pendingLi = null; }
+      if (visible) els.list.append(makeLi(p.startedAt, p.text));
+    } else {
+      // Cada resultado final llega tras una pausa: se separa como frase nueva.
+      const last = s.paragraphs[s.paragraphs.length - 1];
+      last.text = (endsSentence(last.text) ? last.text : last.text + '.') + ' ' + cap(text);
+      const li = visible ? lastSettledLi() : null;
+      if (li) li.querySelector('.final').textContent = last.text;
+    }
+    if (visible) wordCount = wordsOf(s);
+    lastFinalAt = now;
+    breakNext = false;
+    phrase = null;
+    s.updatedAt = isoNoMs(now);
+    persist();
+    updateSessionOption(s);
+    refresh();
+    stick(near);
+  }
+
+  // ---------- reconocimiento de voz ----------
+  function setState(s) { state = s; refresh(); }
+
+  function createRecognizer() {
+    const r = new SR();
+    r.lang = els.lang.value;
+    // En Android el modo continuo repite texto: se escucha frase por frase y se reinicia solo.
+    r.continuous = !isAndroid;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    r.onstart = () => {
+      if (!runStart) runStart = Date.now();
+      setState('listening');
+    };
+    r.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const res = e.results[i];
+        const txt = res && res[0] ? res[0].transcript : '';
+        if (res.isFinal) addFinal(txt);
+        else interim += txt;
+      }
+      showPartial(interim);
+    };
+    r.onerror = (e) => explain(e.error);
+    r.onend = onEnd;
+    return r;
+  }
+
+  function beginRec(auto) {
+    autoStart = auto;
+    const r = createRecognizer();
+    rec = r;
+    try {
+      r.start();
+    } catch (e) {
+      rec = null;
+      want = false;
+      note('warn', 'No se pudo empezar a escuchar. Pulsa el botón otra vez.');
+      finishRun();
+    }
+  }
+
+  function accumulate() {
+    if (runStart && activeId) {
+      const s = byId(activeId);
+      if (s) s.listenedSeconds = Math.round((s.listenedSeconds + (Date.now() - runStart) / 1000) * 10) / 10;
+    }
+    runStart = 0;
+  }
+
+  function onEnd() {
+    rec = null;
+    accumulate();
+    if (want) {
+      const now = Date.now();
+      restarts = restarts.filter((t) => now - t < 15000);
+      restarts.push(now);
+      if (restarts.length > 10) {
+        want = false;
+        note('warn', 'El reconocimiento de voz se corta una y otra vez. Revisa la conexión a internet y pulsa Continuar.');
+        finishRun();
+        return;
+      }
+      if (document.hidden) return; // se reanuda al volver a la página
+      setTimeout(() => { if (want && !rec) beginRec(true); }, 150);
+      return;
+    }
+    finishRun();
+  }
+
+  function finishRun() {
+    want = false;
+    const s = byId(activeId);
+    const last = s && s.paragraphs[s.paragraphs.length - 1];
+    if (last && !endsSentence(last.text)) {
+      last.text += '.';
+      const li = s.id === db.currentId ? lastSettledLi() : null;
+      if (li) li.querySelector('.final').textContent = last.text;
+    }
+    partialEl.textContent = '';
+    partialEl.remove();
+    if (pendingLi) { pendingLi.remove(); pendingLi = null; }
+    breakNext = true;
+    phrase = null;
+    activeId = null;
+    releaseAwake();
+    stopTick();
+    persist();
+    setState('idle');
+  }
+
+  function startListening() {
+    hideNotice();
+    const s = current();
+    s.locale = els.lang.value;
+    activeId = s.id;
+    want = true;
+    breakNext = true;
+    phrase = null;
+    restarts = [];
+    setState('starting');
+    beginRec(false);
+    keepAwake();
+    startTick();
+  }
+
+  function stopListening() {
+    want = false;
+    if (rec) {
+      try { rec.stop(); } catch (e) { rec = null; finishRun(); }
+    } else {
+      finishRun();
+    }
+  }
+
+  function explain(code) {
+    switch (code) {
+      case 'no-speech':
+      case 'aborted':
+        return;
+      case 'not-allowed':
+      case 'service-not-allowed':
+        want = false;
+        if (autoStart) return note('info', 'Se pausó la escucha. Pulsa Continuar para seguir; lo ya transcrito se conserva.');
+        return note('warn', isSafari
+          ? 'No hay permiso para el micrófono o el reconocimiento de voz. Permite el micrófono para esta página y activa Dictado en Ajustes › General › Teclado. Luego pulsa el botón otra vez.'
+          : 'El navegador no tiene permiso para usar el micrófono. Permítelo en el ícono junto a la dirección de la página y vuelve a pulsar el botón.');
+      case 'audio-capture':
+        want = false;
+        return note('warn', 'No se encontró un micrófono. Conecta uno y vuelve a intentarlo.');
+      case 'language-not-supported':
+        want = false;
+        return note('warn', 'Este navegador no reconoce esa variante. Elige otra variante de español y vuelve a intentarlo.');
+      case 'network':
+        if (navigator.brave) {
+          want = false;
+          return note('warn', 'Brave no permite el reconocimiento de voz. Abre esta página en Chrome, Edge o Safari.');
+        }
+        return; // corte momentáneo: se reintenta solo
+      default:
+        return;
+    }
+  }
+
+  async function keepAwake() {
+    try { if ('wakeLock' in navigator && !wake) wake = await navigator.wakeLock.request('screen'); } catch (e) { wake = null; }
+  }
+  function releaseAwake() {
+    try { if (wake) wake.release(); } catch (e) {}
+    wake = null;
+  }
+  function startTick() { stopTick(); tick = setInterval(updateClock, 1000); }
+  function stopTick() { if (tick) clearInterval(tick); tick = null; }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { wake = null; return; }
+    if (want) {
+      keepAwake();
+      if (!rec) beginRec(true);
+    }
+  });
+
+  els.rec.addEventListener('click', () => {
+    if (!SR) return;
+    if (state === 'idle') startListening();
+    else stopListening();
+  });
+
+  // ---------- sesiones ----------
+  els.session.addEventListener('change', () => {
+    db.currentId = els.session.value;
+    persist();
+    hideNotice();
+    renderTranscript();
+  });
+  els.newBtn.addEventListener('click', () => {
+    if (state !== 'idle' || !current().paragraphs.length) return;
+    const s = makeSession();
+    db.sessions.unshift(s);
+    db.currentId = s.id;
+    persist();
+    renderSessions();
+    renderTranscript();
+    toast('Sesión nueva');
+  });
+  els.del.addEventListener('click', () => {
+    els.del.hidden = true;
+    els.newBtn.hidden = true;
+    els.delConfirm.hidden = false;
+    els.delNo.focus();
+  });
+  const closeDelete = () => {
+    els.delConfirm.hidden = true;
+    els.del.hidden = false;
+    els.newBtn.hidden = false;
+  };
+  els.delNo.addEventListener('click', () => { closeDelete(); els.del.focus(); });
+  els.delYes.addEventListener('click', () => {
+    const id = db.currentId;
+    db.sessions = db.sessions.filter((s) => s.id !== id);
+    db.currentId = db.sessions[0] ? db.sessions[0].id : null;
+    current();
+    persist();
+    closeDelete();
+    renderSessions();
+    renderTranscript();
+    toast('Sesión eliminada');
+  });
+
+  // ---------- exportar ----------
+  function plainText(s) {
+    const withTimes = els.stamps.checked;
+    const body = s.paragraphs.map((p) => (withTimes ? `[${clock(p.startedAt)}] ${p.text}` : p.text)).join('\n\n');
+    return `${s.title}\n${longDate(s.createdAt)}\n\n${body}\n`;
+  }
+  const fileBase = (s) => s.title.replace(/[\/:\\?%*|"<>]/g, '-');
+  function download(name, data, type) {
+    const url = URL.createObjectURL(new Blob([data], { type }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  els.copy.addEventListener('click', () => {
+    const s = current();
+    if (!s.paragraphs.length) return;
+    let p;
+    try { p = navigator.clipboard.writeText(plainText(s)); } catch (e) { p = Promise.reject(e); }
+    p.then(() => toast('Copiado al portapapeles')).catch(() => {
+      const r = document.createRange();
+      r.selectNodeContents(els.list);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+      toast('Texto seleccionado: cópialo con el menú o con Ctrl+C');
+    });
+  });
+
+  if (navigator.share) {
+    els.share.hidden = false;
+    els.share.addEventListener('click', () => {
+      const s = current();
+      if (!s.paragraphs.length) return;
+      navigator.share({ title: s.title, text: plainText(s) }).catch(() => {});
+    });
+  }
+
+  els.dlMenu.addEventListener('toggle', () => {
+    if (els.dlMenu.open && !current().paragraphs.length) els.dlMenu.open = false;
+  });
+  els.dlTxt.addEventListener('click', () => {
+    const s = current();
+    els.dlMenu.open = false;
+    if (!s.paragraphs.length) return;
+    download(fileBase(s) + '.txt', plainText(s), 'text/plain;charset=utf-8');
+  });
+  els.dlJson.addEventListener('click', () => {
+    const s = current();
+    els.dlMenu.open = false;
+    if (!s.paragraphs.length) return;
+    download(s.id + '.json', JSON.stringify(s, null, 2), 'application/json');
+  });
+  document.addEventListener('click', (e) => {
+    if (els.dlMenu.open && !els.dlMenu.contains(e.target)) els.dlMenu.open = false;
+  });
+
+  els.stamps.addEventListener('change', () => { db.includeTimes = els.stamps.checked; persist(); });
+  els.lang.addEventListener('change', () => { db.locale = els.lang.value; persist(); hideNotice(); });
+
+  // ---------- arranque ----------
+  els.lang.value = db.locale;
+  els.stamps.checked = db.includeTimes !== false;
+  current();
+  renderSessions();
+  renderTranscript();
+
+  if (!SR) {
+    note('warn', 'Este navegador no puede transcribir voz. Abre esta página en Chrome o Edge (computadora o Android) o en Safari (iPhone, iPad o Mac).');
+  } else if (navigator.brave) {
+    note('warn', 'Brave no permite el reconocimiento de voz. Abre esta página en Chrome, Edge o Safari.');
+  } else if (!window.isSecureContext) {
+    note('warn', 'Para usar el micrófono, abre la página desde su enlace https.');
+  }
+})();
+</script>
+</body>
+</html>
