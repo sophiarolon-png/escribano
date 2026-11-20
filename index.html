@@ -268,18 +268,15 @@ select:disabled { opacity: 0.6; }
 .rec:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .meter { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; font-size: 0.85rem; color: var(--ink-soft); }
+/* Indicador de estado, no un botón: punto de color y texto, sin recuadro. */
 .status {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.25rem 0.65rem;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  background: var(--sheet);
-  color: var(--ink);
-  font-size: 0.8rem;
-  font-weight: 500;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
 }
+.status[data-state="listening"] { color: var(--ink); font-weight: 500; }
 .status::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ink-soft); }
 .status[data-state="listening"]::before { background: var(--live); animation: pulse 1.4s ease-in-out infinite; }
 .status[data-state="starting"]::before { background: var(--accent); }
@@ -446,7 +443,7 @@ select:disabled { opacity: 0.6; }
       <span class="glyph" aria-hidden="true"></span><span id="recLabel">Empezar a transcribir</span>
     </button>
     <div class="meter">
-      <span class="status" id="status" data-state="idle">Listo</span>
+      <span class="status" id="status" data-state="idle">En espera</span>
       <span class="stat"><b id="clock">00:00</b> de escucha</span>
       <span class="stat"><b id="words">0</b> palabras</span>
     </div>
@@ -644,7 +641,7 @@ select:disabled { opacity: 0.6; }
     const live = runStart && activeId === s.id ? Date.now() - runStart : 0;
     els.clock.textContent = duration(s.listenedSeconds * 1000 + live);
   }
-  const STATUS = { idle: 'Listo', starting: 'Preparando', listening: 'Escuchando' };
+  const STATUS = { idle: 'En espera', starting: 'Preparando', listening: 'Escuchando' };
   function refresh() {
     const s = current();
     const has = s.paragraphs.length > 0;
